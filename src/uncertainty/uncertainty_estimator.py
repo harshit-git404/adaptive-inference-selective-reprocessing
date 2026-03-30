@@ -1,14 +1,14 @@
 """Token-level uncertainty estimation for adaptive inference.
 
-This module uses a simple representation-instability heuristic:
+This module uses a semantic representation-instability heuristic:
 
-1. Compute the TF-IDF vector for the full sentence.
+1. Compute a transformer embedding for the full sentence.
 2. Remove one token at a time using whitespace tokenization.
-3. Recompute the TF-IDF vector after each token removal.
-4. Measure the L2 distance between the original and modified vectors.
+3. Recompute the embedding after each token removal.
+4. Measure the L2 distance between the original and modified embeddings.
 
-Tokens that cause a larger feature-space shift are treated as more uncertain or
-more influential for the current prediction. The implementation is
+Tokens that cause a larger semantic representation shift are treated as more
+uncertain or more influential for the current prediction. The implementation is
 intentionally simple and easy to debug, with no complex NLP preprocessing.
 """
 
@@ -17,6 +17,7 @@ from __future__ import annotations
 from typing import Any
 
 import numpy as np
+from src.representations.embedding_model import get_sentence_embedding
 
 
 def _get_threshold(config: Any) -> float:
@@ -63,24 +64,24 @@ def compute_token_uncertainty(
     Returns:
         A list of dictionaries, one per token, each containing the token text,
         its position, and the uncertainty score defined as the L2 distance
-        between the original sentence vector and the vector after removing that
-        token.
+        between the original sentence embedding and the embedding after
+        removing that token.
     """
 
     tokens = sentence.split()
     if not tokens:
         return []
 
-    base_vector = vectorizer.transform([sentence]).toarray()[0]
+    base_embedding = get_sentence_embedding(sentence)
 
     token_scores: list[dict[str, str | int | float]] = []
     for index, token in enumerate(tokens):
         modified_sentence = remove_token(sentence, index)
-        modified_vector = vectorizer.transform([modified_sentence]).toarray()[0]
+        modified_embedding = get_sentence_embedding(modified_sentence)
 
-        # Representation instability computed as embedding distance
-        # approximates change in intermediate feature representation.
-        uncertainty_score = float(np.linalg.norm(base_vector - modified_vector))
+        # Semantic representation instability computed using transformer
+        # embeddings approximates change in intermediate feature representation.
+        uncertainty_score = float(np.linalg.norm(base_embedding - modified_embedding))
 
         token_scores.append(
             {
