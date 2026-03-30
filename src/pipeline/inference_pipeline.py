@@ -17,7 +17,7 @@ inspected independently during experimentation and debugging.
 from __future__ import annotations
 
 from config.config import get_config
-from data.data_loader import generate_dataset, split_dataset
+from data.data_loader import generate_dataset, load_real_dataset, split_dataset
 from src.fusion.fusion_logic import fuse_predictions
 from src.models.large_model import predict_proba_large, train_large_model
 from src.models.small_model import predict_proba_small, train_small_model
@@ -31,7 +31,16 @@ from src.uncertainty.uncertainty_estimator import (
 def _train_pipeline_models(config):
     """Train the small and large models used by the adaptive pipeline."""
 
-    texts, labels = generate_dataset()
+    dataset_type = config["DATASET_TYPE"]
+    if dataset_type == "synthetic":
+        texts, labels = generate_dataset()
+    elif dataset_type == "imdb":
+        texts, labels = load_real_dataset()
+    else:
+        raise ValueError(
+            "Unsupported DATASET_TYPE. Expected 'synthetic' or 'imdb'."
+        )
+
     train_texts, train_labels, test_texts, test_labels = split_dataset(texts, labels)
 
     small_model, small_vectorizer = train_small_model(

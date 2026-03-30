@@ -128,6 +128,35 @@ def generate_dataset(num_samples: int = 300) -> tuple[list[str], list[int]]:
     return shuffled_texts, shuffled_labels
 
 
+def load_real_dataset(sample_size: int = 300) -> tuple[list[str], list[int]]:
+    """Load a deterministic sample of real sentiment data from IMDb.
+
+    Args:
+        sample_size: Number of examples to sample from the IMDb training split.
+
+    Returns:
+        A tuple of ``(texts, labels)`` sampled from the dataset.
+    """
+
+    try:
+        from datasets import load_dataset
+    except ImportError as exc:
+        raise ImportError(
+            "The 'datasets' package is required for DATASET_TYPE='imdb'. "
+            "Install it with 'pip install -r requirements.txt'."
+        ) from exc
+
+    dataset = load_dataset("imdb", split="train")
+    rng = random.Random(Config.RANDOM_SEED)
+
+    bounded_sample_size = max(1, min(sample_size, len(dataset)))
+    selected_indices = rng.sample(range(len(dataset)), bounded_sample_size)
+
+    texts = [str(dataset[index]["text"]).strip() for index in selected_indices]
+    labels = [int(dataset[index]["label"]) for index in selected_indices]
+    return texts, labels
+
+
 def split_dataset(
     texts: list[str] | None = None,
     labels: list[int] | None = None,

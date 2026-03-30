@@ -4,6 +4,9 @@ The parameters are defined as class attributes so they are easy to inspect and
 modify in one place.
 
 Attributes:
+    DATASET_TYPE:
+        Dataset source used by the pipeline. Supported values are
+        ``"synthetic"`` and ``"imdb"``.
     SMALL_MODEL_MAX_FEATURES:
         Maximum number of features used by the lightweight first-pass model.
     LARGE_MODEL_MAX_FEATURES:
@@ -24,6 +27,7 @@ Attributes:
 class Config:
     """Container for experiment-wide configuration values."""
 
+    DATASET_TYPE = "synthetic"
     SMALL_MODEL_MAX_FEATURES = 1000
     LARGE_MODEL_MAX_FEATURES = 2000
     # Distance-based uncertainty scores operate on a larger numeric scale, so a
@@ -38,6 +42,7 @@ def get_config() -> dict[str, float | int]:
     """Return the current configuration as a plain dictionary."""
 
     return {
+        "DATASET_TYPE": Config.DATASET_TYPE,
         "SMALL_MODEL_MAX_FEATURES": Config.SMALL_MODEL_MAX_FEATURES,
         "LARGE_MODEL_MAX_FEATURES": Config.LARGE_MODEL_MAX_FEATURES,
         "UNCERTAINTY_THRESHOLD": Config.UNCERTAINTY_THRESHOLD,
