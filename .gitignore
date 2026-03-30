@@ -1,6 +1,9 @@
 venv/
+pycache/
 __pycache__/
 *.pyc
+experiments/results/
+*.csv
 .env
 .vscode/
 .ipynb_checkpoints/

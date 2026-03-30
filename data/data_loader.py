@@ -11,6 +11,8 @@ import random
 
 from config.config import Config
 
+MAX_TOKENS = 50
+
 POSITIVE_TEMPLATES = [
     "I love this product",
     "This movie was amazing",
@@ -90,6 +92,13 @@ def _vary_sentence(template: str, rng: random.Random) -> str:
     return f"{sentence}."
 
 
+def _truncate_text(text: str, max_tokens: int = MAX_TOKENS) -> str:
+    """Truncate text to the first ``max_tokens`` whitespace-delimited tokens."""
+
+    tokens = text.split()
+    return " ".join(tokens[:max_tokens])
+
+
 def generate_dataset(num_samples: int = 300) -> tuple[list[str], list[int]]:
     """Generate a balanced synthetic sentiment dataset.
 
@@ -152,7 +161,15 @@ def load_real_dataset(sample_size: int = 300) -> tuple[list[str], list[int]]:
     bounded_sample_size = max(1, min(sample_size, len(dataset)))
     selected_indices = rng.sample(range(len(dataset)), bounded_sample_size)
 
-    texts = [str(dataset[index]["text"]).strip() for index in selected_indices]
+    texts = []
+    for index in selected_indices:
+        text = str(dataset[index]["text"]).strip()
+
+        # Truncation reduces computational cost of leave-one-token-out
+        # embedding analysis while maintaining sufficient linguistic diversity
+        # for experimental validation.
+        texts.append(_truncate_text(text))
+
     labels = [int(dataset[index]["label"]) for index in selected_indices]
     return texts, labels
 

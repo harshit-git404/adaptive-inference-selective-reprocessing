@@ -134,7 +134,8 @@ adaptive-inference-demo/
 |   `-- data_loader.py
 |-- experiments/
 |   |-- __init__.py
-|   `-- run_demo.py
+|   |-- run_demo.py
+|   `-- run_experiments.py
 |-- src/
 |   |-- __init__.py
 |   |-- fusion/
@@ -147,6 +148,9 @@ adaptive-inference-demo/
 |   |-- pipeline/
 |   |   |-- __init__.py
 |   |   `-- inference_pipeline.py
+|   |-- representations/
+|   |   |-- __init__.py
+|   |   `-- embedding_model.py
 |   |-- routing/
 |   |   |-- __init__.py
 |   |   `-- selective_router.py
@@ -165,12 +169,13 @@ adaptive-inference-demo/
 - `config/`: tunable settings such as feature limits, uncertainty threshold,
   fusion weights, and random seed
 - `data/`: synthetic dataset generation and train/test splitting
-- `experiments/`: runnable demo entry points
+- `experiments/`: runnable demo and experiment entry points
 - `src/models/`: first-pass and selective reprocessing models
 - `src/uncertainty/`: token-level uncertainty scoring
 - `src/routing/`: extraction of uncertain subsequences
 - `src/fusion/`: probability fusion logic
 - `src/pipeline/`: end-to-end pipeline orchestration
+- `src/representations/`: reusable sentence-embedding utilities
 - `tests/`: lightweight verification
 
 ## Installation
@@ -258,7 +263,7 @@ Example:
 This course explanation was confusing
 ```
 
-## Usage
+## Running Demo
 
 Run the interactive demonstration:
 
@@ -271,12 +276,43 @@ Then choose:
 - `1` to run the demo dataset
 - `2` to test a custom sentence
 
+## Running Experiments
+
+Run the experiment script:
+
+```bash
+python experiments/run_experiments.py
+```
+
+Outputs:
+
+- summary statistics printed in the terminal
+- a CSV file with per-sample metrics written to
+  `experiments/results/results.csv`
+
+## Experimental Results
+
+Quantitative experiments can be reproduced with:
+
+```bash
+python experiments/run_experiments.py
+```
+
+The script exports a results table to:
+
+```text
+experiments/results/results.csv
+```
+
+This CSV is generated dynamically when experiments are run. It is treated as a
+runtime artifact and is not stored in the repository by default.
+
 ## Example Output Explanation
 
 The demo prints a readable view of inference behavior for each displayed
 sample. It shows:
 
-- `Token uncertainty scores`: per-token probability-change scores
+- `Token uncertainty scores`: per-token embedding-instability scores
 - `Uncertain Tokens Detected`: tokens that crossed the uncertainty threshold
 - `Reduced Sentence`: text sent to the deeper model
 - `Full compute cost`: estimated cost of processing the entire sentence with

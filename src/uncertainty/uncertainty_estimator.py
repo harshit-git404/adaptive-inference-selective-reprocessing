@@ -112,6 +112,18 @@ def identify_uncertain_tokens(
         return [0]
 
     threshold = _get_threshold(config)
+    score_values = np.array(
+        [float(token_info["uncertainty_score"]) for token_info in token_scores],
+        dtype=float,
+    )
+    mean_score = float(score_values.mean()) if score_values.size else 0.0
+    std_score = float(score_values.std()) if score_values.size else 0.0
+
+    # Higher multiplier makes the system more selective and improves the
+    # balance between shallow and deep inference.
+    adaptive_threshold = mean_score + 0.8 * std_score
+    threshold = max(threshold, adaptive_threshold)
+
     return [
         int(token_info["index"])
         for token_info in token_scores
