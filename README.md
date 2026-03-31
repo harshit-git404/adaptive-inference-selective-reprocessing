@@ -335,3 +335,20 @@ sample. It shows:
 ## License
 
 MIT License
+
+## Patent Submission Documents
+
+This repository includes documentation prepared for institutional patent
+submission of the proposed adaptive inference architecture.
+
+Location:
+`docs/patent_submission/`
+
+Contents:
+- IDF-A inventor disclosure form
+- IDF-B technical disclosure document
+- architecture diagram
+- experimental validation description
+
+These documents correspond to the proof-of-concept implementation of selective
+feature reprocessing using uncertainty-guided adaptive inference.

@@ -4,7 +4,11 @@ __pycache__/
 *.pyc
 experiments/results/
 *.csv
+*.log
 .env
 .vscode/
+.cache/
+models/
+checkpoints/
 .ipynb_checkpoints/
 .DS_Store
